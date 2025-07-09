@@ -1,0 +1,33 @@
+# Configuration for Cog ⚙️
+# Reference: https://cog.run/yaml
+
+image: "r8.im/kevin51jiang/paddleocr"
+
+build:
+  # set to true if your model requires a GPU
+  gpu: true
+  cuda: "12.9"
+
+  # a list of ubuntu apt packages to install
+  system_packages:
+    - "ffmpeg"
+    - "libsm6"
+    - "libxext6"
+    - "libgl1"
+    # - "libgl1-mesa-glx"
+    # - "libglib2.0-0"
+
+  # python version in the form '3.11' or '3.11.4'
+  python_version: "3.12"
+
+  # path to a Python requirements.txt file
+  python_requirements: requirements.txt
+
+  # commands run after the environment is setup
+  run:
+    - "python -m pip install paddlepaddle-gpu==3.1.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu129/"
+    - "echo env is ready!"
+    # - "echo another command if needed"
+
+# predict.py defines how predictions are run on your model
+predict: "predict.py:Predictor"
