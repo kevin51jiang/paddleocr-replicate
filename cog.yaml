@@ -6,7 +6,7 @@ image: "r8.im/kevin51jiang/paddleocr"
 build:
   # set to true if your model requires a GPU
   gpu: true
-  cuda: "12.9"
+  cuda: "12.2"
 
   # a list of ubuntu apt packages to install
   system_packages:
