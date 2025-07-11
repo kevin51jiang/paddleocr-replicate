@@ -5,6 +5,8 @@ from cog import BasePredictor, Input, Path
 from paddleocr import PaddleOCR
 import json
 import tempfile
+import base64
+import os
 
 
 
@@ -20,11 +22,30 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
-        image: Path = Input(description="Input image"),
+        image: str = Input(description="Base64 encoded image"),
     ) -> Path:
         """Run a single prediction on the model"""
         
-        result = self.ocr.predict(str(image))
+        # Handle data URI prefix if present (e.g., data:image/png;base64,)
+        if image.startswith('data:'):
+            # Find the comma that separates the header from the base64 data
+            comma_index = image.find(',')
+            if comma_index != -1:
+                image = image[comma_index + 1:]
+        
+        # Decode base64 string to binary data
+        image_data = base64.b64decode(image)
+        
+        # Create a temporary file to save the decoded image
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as temp_img_file:
+            temp_img_file.write(image_data)
+            temp_img_path = temp_img_file.name
+        
+        try:
+            result = self.ocr.predict(temp_img_path)
+        finally:
+            # Clean up the temporary image file
+            os.unlink(temp_img_path)
 
         # Extract the first result (PaddleOCR returns a list)
         if result and len(result) > 0:
